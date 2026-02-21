@@ -1,17 +1,30 @@
 #!/bin/sh
 
-# 如果没有设置环境变量，则使用默认值（强烈建议在 Flux 面板中修改这些变量）
-UUID=${UUID:-"b831381d-6324-4d53-ad4f-8cda48b30811"}
-WS_PATH=${WS_PATH:-"/vless"}
+# 默认变量设置（如果 Flux 面板没设置，则使用这些默认值）
+export UUID=${UUID:-"535a6590-fabf-4c30-a555-2e135d42e789"}
+export WS_PATH=${WS_PATH:-"//?ed=2048"}
 
-# 使用环境变量替换模板中的占位符
+echo "------------------------------------------------"
+echo "Step 1: 正在对当前 Flux 节点进行网络测速..."
+echo "------------------------------------------------"
+
+# 下载并直接运行 speedtest-cli 脚本
+wget -qO- https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
+
+echo "------------------------------------------------"
+echo "Step 2: 测速完成，正在配置 Xray..."
+echo "------------------------------------------------"
+
+# 使用 sed 替换模板中的占位符
+# 注意：WS_PATH 包含斜杠和特殊字符，因此 sed 使用 | 作为分隔符
 sed -e "s/\${UUID}/$UUID/g" \
     -e "s|\${WS_PATH}|$WS_PATH|g" \
     /etc/xray/config.template.json > /etc/xray/config.json
 
-# 打印生成的配置（用于在 Flux 日志中排错，生产环境确认无误后可删除此行）
-echo "Current Xray Config:"
-cat /etc/xray/config.json
+echo "配置已生成。UUID: $UUID, Path: $WS_PATH"
+echo "------------------------------------------------"
+echo "Step 3: 启动 Xray 服务..."
+echo "------------------------------------------------"
 
-# 启动 Xray
+# 启动服务
 exec xray -config /etc/xray/config.json
