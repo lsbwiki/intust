@@ -1,0 +1,9 @@
+{
+  "name": "mashala",
+  "version": "1.0.0",
+  "description": "proxy project",
+  "main": "index.js",
+  "scripts": {
+    "start": "sh install.sh"
+  }
+}
