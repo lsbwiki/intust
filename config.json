@@ -2,7 +2,7 @@
   "log": { "loglevel": "none" },
   "inbounds": [
     {
-      "port": 1080,
+      "port": 23575,
       "protocol": "vless",
       "settings": {
         "clients": [
