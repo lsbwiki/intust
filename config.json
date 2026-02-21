@@ -10,7 +10,7 @@
       "settings": {
         "clients": [
           {
-            "id": "${UUID}",
+            "id": "535a6590-fabf-4c30-a555-2e135d42e789",
             "level": 0
           }
         ],
@@ -19,14 +19,15 @@
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "${WS_PATH}"
+          "path": "//?ed=2048"
         }
       }
     }
   ],
   "outbounds": [
     {
-      "protocol": "freedom"
+      "protocol": "freedom",
+      "tag": "direct"
     }
   ]
 }
