@@ -1,17 +1,16 @@
 FROM teddysun/xray:latest
 
-# 安装 Python3 和工具包，用于启动前的网络测速
+# 安装测速工具
 RUN apk update && apk add --no-cache python3 wget curl
 
-# 复制配置文件模板和启动脚本
-COPY config.template.json /etc/xray/config.template.json
-COPY start.sh /start.sh
+# 复制配置文件和脚本 (改名为 install.sh)
+COPY config.json /etc/xray/config.json
+COPY install.sh /install.sh
 
-# 赋予启动脚本执行权限
-RUN chmod +x /start.sh
+RUN chmod +x /install.sh
 
-# 暴露 Flux 面板中设置的端口
+# 暴露端口
 EXPOSE 1080
 
-# 启动容器时执行脚本
-CMD ["/start.sh"]
+# 容器启动命令
+CMD ["/bin/sh", "/install.sh"]
