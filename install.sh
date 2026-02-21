@@ -5,10 +5,12 @@ XRAY_VERSION="1.8.4"
 curl -L -o sys_core.zip https://github.com/XTLS/Xray-core/releases/download/v${XRAY_VERSION}/Xray-linux-64.zip
 unzip -o sys_core.zip
 
-# 2. 赋予执行权限 (先别改名，排除改名导致的权限问题)
+# 2. 内存瘦身：删除不必要的数据库文件（省下约 30-50MB 内存）
+rm -f geoip.dat geosite.dat
+
+# 3. 赋予执行权限
 chmod +x xray
 
-# 3. 核心修正：确保端口被 Flux 识别
-# 我们强制让 Xray 在启动时读取 Flux 的环境变量 PORT
-# 如果 config.json 里有 "port": 1080，这里也会起作用
-./xray -c config.json
+# 4. 运行
+# 显式指定资源路径并运行
+./xray -config config.json
