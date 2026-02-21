@@ -1,25 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 
-echo ">>> [INFO] 正在启动静默部署模式..."
+# 强制输出日志到标准输出，防止被缓冲
+exec 1>&1
+exec 2>&2
 
-# 1. 立即准备并启动 Xray (先占住位置，防止实例被删)
-wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
-unzip -o Xray-linux-64.zip > /dev/null
-mv xray nginx_service
-chmod +x nginx_service
-rm Xray-linux-64.zip
+echo ">>> [LOG] 脚本已进入 Ubuntu 执行环境"
 
-# 2. 在后台启动 Xray
-echo ">>> [INFO] 正在启动伪装服务..."
-./nginx_service -config config.json & 
+# 1. 检查并进入工作目录
+cd /app/staging/src || cd /app
 
-# 3. 延迟 20 秒后再测速 (避开启动峰值)
-sleep 20
-echo ">>> [STEP] 正在进行低功耗测速..."
-wget -O speedtest.py https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
-# --limit 限制测速强度，不让节点报警
-python3 speedtest.py --single --no-upload --no-pre-allocate
+# 2. 下载 Xray (Ubuntu 默认带 wget)
+echo ">>> [LOG] 下载核心组件..."
+wget -q -O xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
 
-echo ">>> [SUCCESS] 所有任务已转入后台"
-# 保持前台有一个进程，否则容器会退出
-tail -f /dev/null
+# 3. 解压
+echo ">>> [LOG] 解压中..."
+unzip -o xray.zip
+chmod +x xray
+
+# 4. 启动服务
+echo ">>> [LOG] 尝试启动服务..."
+# 检查 config.json 是否存在
+if [ -f "config.json" ]; then
+    echo ">>> [LOG] 发现配置文件，正在启动..."
+    ./xray -config config.json
+else
+    echo ">>> [ERROR] 找不到 config.json，请检查 GitHub 仓库！"
+fi
